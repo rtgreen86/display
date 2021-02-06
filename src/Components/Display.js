@@ -1,51 +1,23 @@
 import React, { useReducer } from 'react';
-import Character from './Character'
+import Character from './Character';
 
-function getDefaultData() {
-  const charCount = 80 * 25;
-  const dotCount = 7 * 8;
-
-  const display = [];
-  for (let i = 0; i < charCount; i++) {
-    const id = `char-${i}`;
-    const dots = [];
-    display.push({ id, dots });
-    for (let j = 0; j < dotCount; j++) {
-      dots.push({
-        id: `char-${i}-dot-${j}`,
-        light: false
-      });
-    }
-  }
-  return display;
-}
-
-const dataReducer = (state, event) => {
-  const value = event.target.dataset.value;
-  return state.reduce((chars, char) => {
-    const isMouseOvered = char.dots.some(({id}) => id === value);
-    const isLight = char.dots.some(({light}) => light);
-    const toggleDots = light => dot => ({...dot, light });
-    const toggleDotWithId = (targetId, targetLight) => ({id, light, ...props}) => ({
-      ...props,
-      id,
-      light: id === targetId ? targetLight : light
-    });
-    return [...chars, (!isMouseOvered && !isLight)
-      ? char
-      : {
-        ...char,
-        dots: char.dots.map(toggleDots(isMouseOvered)).map(toggleDotWithId(value, false))
-      }
-    ];
-  }, []);
-};
+const charCount = 80 * 25;
+const dotCount = 7 * 8;
+const defaultChar = (new Array(dotCount)).fill(false)
+const defaultDisplay = (new Array(charCount)).fill(defaultChar);
+const reducer = (state, eventArgs) => eventArgs;
+const getDisplay = (activeCharIdx, activeDotIdx) => defaultDisplay.map((char, charIdx) => (charIdx !== activeCharIdx
+    ? char
+    : char.map((dot, dotIdx) => dotIdx !== activeDotIdx)
+));
 
 export default function Display() {
-  const [data, dispatch] = useReducer(dataReducer, getDefaultData())
+  const [{ charIdx, dotIdx }, dispatch] = useReducer(reducer, {});
   return (
-    <div className="display">
-      {data.map(({ id, dots }) => (<Character key={id} dots={dots} onMouseMove={dispatch}></Character>))}
+    <div className="display" onMouseOut={() => dispatch({})}>
+      {getDisplay(charIdx, dotIdx).map((dots, charIdx) => (
+        <Character key={String(charIdx)} charIdx={charIdx} dots={dots} onMouseMove={dispatch} />
+      ))}
     </div>
   );
 }

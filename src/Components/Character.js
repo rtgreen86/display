@@ -1,14 +1,12 @@
-export default function Character({
-  dots, onMouseMove
-}) {
-  return (
-    <div className="char">
-      {dots
-        .map(({ light, ...props }) => ({
-          className: light ? 'dot light' : 'dot',
-          ...props
-        }))
-        .map(({className, id}) => (<span className={className} key={id} data-value={id} onMouseMove={onMouseMove}></span>))}
-    </div>
-  );
-}
+import { memo } from 'react';
+import Dot from './Dot';
+
+export default memo(({
+  charIdx, dots, onMouseMove
+}) => (
+  <div className="char">
+    {dots.map((dotIsLight, dotIdx) => (
+      <Dot key={String(dotIdx)} charIdx={charIdx} dotIdx={dotIdx} isLight={dotIsLight} onMouseMove={onMouseMove}></Dot>
+    ))}
+  </div>
+));
